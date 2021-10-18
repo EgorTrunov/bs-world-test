@@ -14,8 +14,6 @@
       <Converter v-if="tabList[0].isActive"/>
       <Portfolio v-if="tabList[1].isActive"/>
     </main>
-    <footer class="footer">
-    </footer>
   </div>
 </template>
 
@@ -110,6 +108,22 @@ body {
   }
   .header__tab:first-of-type {
     margin-right: 20px;
+  }
+}
+
+@media (max-width: 430px) {
+  .container {
+    padding: 10px;
+  }
+  .header {
+    margin-bottom: 30px;
+  .header__tab:first-of-type {
+    margin-right: 10px;
+  }
+  .header__tab {
+    max-width: 100px;
+    padding: 5px;
+  }
   }
 }
 </style>

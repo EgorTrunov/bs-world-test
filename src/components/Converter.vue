@@ -14,8 +14,8 @@
         <img class="converter__arrows" src="@/assets/arrows.svg">
         <div class="currency__pick--to">
           <ul class="currency__list currency__list--right">
-            <li class="currency__item" :class="{ 'currency--active': currencyTo.isActiveTo }" v-for="(currencyTo, id) in currencyListTo" :key="id" @click="selectCurrensyTo(id)">
-              {{ currencyTo.text }}
+            <li class="currency__item" :class="{ 'currency--active': conversion.isActive }" v-for="(conversion, index) in conversionList" :key="index" @click="selectConversion(index)">
+              {{ conversion.text }}
             </li>
           </ul>
         </div>
@@ -47,18 +47,18 @@ export default {
           isActive: false,
         },
       ],
-      currencyListTo: [
+      conversionList: [
         {
           text: 'USD',
-          isActiveTo: true,
+          isActive: true,
         },
         {
           text: 'ETH',
-          isActiveTo: false,
+          isActive: false,
         },
         {
           text: 'BTC',
-          isActiveTo: false,
+          isActive: false,
         },
       ]
     }
@@ -70,11 +70,11 @@ export default {
       });
       this.currencyList[index].isActive = true;
     },
-    selectCurrencyTo(id) {
-      this.currencyListTo.forEach((element) => {
-        element.isActiveTo = false;
+    selectConversion(index) {
+      this.conversionList.forEach((element) => {
+        element.isActive = false;
       });
-      this.currencyListTo[id].isActiveTo = true;
+      this.conversionList[index].isActive = true;
     },
     }
 }
@@ -165,6 +165,37 @@ h1 {
     .input {
       @extend %input;
     }
+  }
+}
+
+@media (max-width: 700px) {
+  h1 {
+    margin-bottom: 30px;
+  }
+  .currency__converter {
+    .currency__pick {
+      grid-template-columns: repeat(1, 1fr);
+      justify-items: center;
+    }
+    .converter__arrows {
+      top: 0;
+      transform: rotate(90deg);
+    }
+    .currency__input {
+      flex-direction: column;
+      align-items: center;
+      gap: 25px;
+    }
+  }
+}
+
+@media (max-width: 425px) {
+  h1 {
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+  .converter__arrows {
+    width: 25px;
   }
 }
 </style>
