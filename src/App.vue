@@ -1,26 +1,115 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div class="container">
+    <header class="header">
+      <a class="header__img" href="#">
+        <img src="@/assets/logo.svg" width="43" height="47">
+      </a>
+      <div class="header__tabs">
+        <button class="button header__tab" type="button" :class="{ 'tab--active': tab.isActive }" v-for="(tab, index) in tabList" :key="index" @click="selectTab(index)">
+          {{ tab.text }}
+        </button> 
+      </div>
+    </header>
+    <main class="main">
+      <Converter v-if="tabList[0].isActive"/>
+      <Portfolio v-if="tabList[1].isActive"/>
+    </main>
+    <footer class="footer">
+    </footer>
+  </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue';
+import Converter from './components/Converter.vue'
+import Portfolio from './components/Portfolio.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld,
+    Converter, Portfolio
+  }, 
+  data() {
+    return {
+      tabList: [
+        {
+          text: 'Конвертер',
+          isActive: true,
+        },
+        {
+          text: 'Портфель',
+          isActive: false,
+        }
+      ]
+    }
   },
-};
+  methods: {
+    selectTab(index) {
+      this.tabList.forEach((element) => {
+        element.isActive = false;
+      });
+      this.tabList[index].isActive = true;
+    },
+  }
+}
 </script>
 
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 1.92em;
+  ul {
+    list-style: none;
+  }
+  a {
+    text-decoration: none;
+  }
+}
+
+$primary-color: #27262E;
+$text-color: #bb9f89;
+
+
+%button {
+  padding: 10px 25px;
+  background-color: $primary-color;
+  border: 3px solid $text-color;
+  color: $text-color;
+  width: 125px;
+  height: 47px;
+  cursor: pointer;
+}
+
+body {
+  background: $primary-color;
+  color: $text-color;
+}
+
+.container {
+  max-width: 1240px;
+  padding: 20px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 80px;
+  .button {
+    @extend %button;
+  }
+  button:hover {
+    background: $text-color;
+    color: $primary-color;
+    transition: 0.7s ease;
+  }
+  .header__tab:first-of-type {
+    margin-right: 20px;
+  }
 }
 </style>
