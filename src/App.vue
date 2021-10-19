@@ -112,19 +112,20 @@ body {
   margin: 0 auto;
 }
 
+.button {
+  @extend %button;
+}
+.button:hover {
+  background: $text-color;
+  color: $primary-color;
+  transition: 0.7s ease;
+}
+
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 80px;
-  .button {
-    @extend %button;
-  }
-  button:hover {
-    background: $text-color;
-    color: $primary-color;
-    transition: 0.7s ease;
-  }
   .header__tab:first-of-type {
     margin-right: 20px;
   }

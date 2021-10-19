@@ -78,11 +78,11 @@ export default {
       });
       this.conversionList[index].isActive = true;
     },
-    }
+  }
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 
 *{
   input::-webkit-outer-spin-button,
