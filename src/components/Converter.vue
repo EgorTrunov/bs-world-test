@@ -31,6 +31,7 @@
 <script>
 export default {
   name: 'Converter',
+  props: ['currencies'],
   data() {
     return {
       currencyList: [
@@ -62,7 +63,7 @@ export default {
         },
       ],
       firstValue: 1,
-      secondValue: 40000
+      secondValue: this.currencies.btcToUsd
     }
   },
     methods: {

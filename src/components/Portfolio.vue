@@ -63,7 +63,7 @@ $primary-color: #27262E;
 
 .portfolio__inner {
   margin: 0 auto;
-  max-width: 800px;
+  max-width: 1000px;
 }
 
 .portfolio__header {
@@ -91,6 +91,7 @@ $primary-color: #27262E;
             @extend %text;
         }
         li {
+            margin-left: 15px;
             @extend %text; 
         }
     }

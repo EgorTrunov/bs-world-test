@@ -11,7 +11,7 @@
       </div>
     </header>
     <main class="main">
-      <Converter v-if="tabList[0].isActive"/>
+      <Converter v-if="tabList[0].isActive" :currencies="currencies"/>
       <Portfolio v-if="tabList[1].isActive"/>
     </main>
   </div>
@@ -40,7 +40,13 @@ export default {
           text: 'Портфель',
           isActive: false,
         }
-      ]
+      ],
+      currencies: {
+        btcToUsd: 0,
+        btcToEth: 0,
+        ethtoUsd: 0,
+        ethToBtc: 0,
+      }
     }
   },
   async created (){
@@ -54,17 +60,17 @@ export default {
       });
       this.tabList[index].isActive = true;
     },
-    currentRateBtc: async() => {
+    async currentRateBtc() {
       let data = await CoinGeckoClient.coins.fetch('bitcoin', {});
-      let btcToUsd = data.data.market_data.current_price.usd;
-      let btcToEth = data.data.market_data.current_price.eth;
-      console.log('btcToUsd: ' + btcToUsd, 'btcToEth: ' + btcToEth);
+      this.currencies.btcToUsd = data.data.market_data.current_price.usd;
+      this.currencies.btcToEth = data.data.market_data.current_price.eth;
+      // console.log('btcToUsd: ' + btcToUsd, 'btcToEth: ' + btcToEth);
     },
-    currentRateEth: async() => {
+    async currentRateEth() {
       let data = await CoinGeckoClient.coins.fetch('ethereum', {});
-      let ethtoUsd = data.data.market_data.current_price.usd;
-      let ethToBtc = data.data.market_data.current_price.btc;
-      console.log('ethtoUsd: ' + ethtoUsd, 'ethToBtc: ' + ethToBtc);
+      this.currencies.ethtoUsd = data.data.market_data.current_price.usd;
+      this.currencies.ethToBtc = data.data.market_data.current_price.btc;
+      // console.log('ethtoUsd: ' + ethtoUsd, 'ethToBtc: ' + ethToBtc);
     }
   }
 }
