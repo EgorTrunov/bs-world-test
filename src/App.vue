@@ -21,6 +21,9 @@
 import Converter from './components/Converter.vue'
 import Portfolio from './components/Portfolio.vue'
 
+const CoinGecko = require('coingecko-api');
+const CoinGeckoClient = new CoinGecko();
+
 export default {
   name: 'App',
   components: {
@@ -40,6 +43,10 @@ export default {
       ]
     }
   },
+  async created (){
+      await this.currentRateBtc();
+      await this.currentRateEth();
+  },
   methods: {
     selectTab(index) {
       this.tabList.forEach((element) => {
@@ -47,6 +54,18 @@ export default {
       });
       this.tabList[index].isActive = true;
     },
+    currentRateBtc: async() => {
+      let data = await CoinGeckoClient.coins.fetch('bitcoin', {});
+      let btcToUsd = data.data.market_data.current_price.usd;
+      let btcToEth = data.data.market_data.current_price.eth;
+      console.log('btcToUsd: ' + btcToUsd, 'btcToEth: ' + btcToEth);
+    },
+    currentRateEth: async() => {
+      let data = await CoinGeckoClient.coins.fetch('ethereum', {});
+      let ethtoUsd = data.data.market_data.current_price.usd;
+      let ethToBtc = data.data.market_data.current_price.btc;
+      console.log('ethtoUsd: ' + ethtoUsd, 'ethToBtc: ' + ethToBtc);
+    }
   }
 }
 </script>

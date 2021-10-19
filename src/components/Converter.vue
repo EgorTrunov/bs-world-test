@@ -21,8 +21,8 @@
         </div>
       </div>
       <div class="currency__input">
-        <input class="input" type="number" value="1">
-        <input class="input" type="number" value="40000">
+        <input class="input" type="number" v-model="firstValue">
+        <input class="input" type="number" v-model="secondValue">
       </div>
     </div>
   </div>
@@ -60,7 +60,9 @@ export default {
           text: 'BTC',
           isActive: false,
         },
-      ]
+      ],
+      firstValue: 1,
+      secondValue: 40000
     }
   },
     methods: {
