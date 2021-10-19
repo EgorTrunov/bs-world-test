@@ -6,7 +6,7 @@
             <h1>Здравствуйте, {{ userName }}</h1>
         </div>
         <div class="portfolio__content">
-            <p class="portfolio__rating">Оценка портфеля: {{ ratingValue }}</p>
+            <p class="portfolio__rating">Оценка портфеля: {{ ratingValue }}$</p>
             <ul class="portfolio__list">
                 <span>Содержание портфеля:</span>
                 <li v-for="(currency, index) in currencies" :key="index">
@@ -27,6 +27,7 @@ export default {
     data() {
         return {
             userName: 'Анатолий Геннадьевич',
+            ratingValue: 100000,
             currencies: [
                 {
                     title: 'USD',
