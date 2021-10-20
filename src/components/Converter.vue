@@ -21,8 +21,8 @@
         </div>
       </div>
       <div class="currency__input">
-        <input class="input" type="number" v-model="firstValue">
-        <input class="input" type="number" v-model="secondValue">
+        <input class="input" type="number" placeholder="Введите значение" v-bind:value="firstValue" v-on:input="toValueFromConverter">
+        <input class="input" type="number" placeholder="Введите значение" v-bind:value="secondValue" v-on:input="fromValueToConverter">
       </div>
     </div>
   </div>
@@ -63,7 +63,10 @@ export default {
         },
       ],
       firstValue: 1,
-      secondValue: this.currencies.btcToUsd
+      secondValue: this.currencies.btcToUsd,
+      toCurrency: 'BTC',
+      fromCurrency: 'USD',
+      exchange: ''
     }
   },
     methods: {
@@ -72,13 +75,64 @@ export default {
         element.isActive = false;
       });
       this.currencyList[index].isActive = true;
+      this.toCurrency = this.currencyList[index].text;
     },
     selectConversion(index) {
       this.conversionList.forEach((element) => {
         element.isActive = false;
       });
       this.conversionList[index].isActive = true;
+      this.fromCurrency = this.conversionList[index].text;
     },
+    toValueFromConverter(event) {
+      this.firstValue = event.target.value;
+      this.currenciesChange();
+      if (this.toCurrency === 'USD') {
+        this.secondValue = (this.firstValue / this.exchange).toFixed(3);
+      } else {
+        this.secondValue = (this.firstValue * this.exchange).toFixed(3);
+      }
+    },
+    fromValueToConverter(event) {
+      this.secondValue = event.target.value;
+      this.currenciesChange();
+        if (this.fromCurrency === 'USD') {
+        this.firstValue = (this.secondValue / this.exchange).toFixed(3);
+      } else {
+        this.firstValue = (this.secondValue * this.exchange).toFixed(3);
+      }
+    },
+    currenciesChange() {
+      switch(this.toCurrency) {
+        case 'BTC': 
+          if (this.fromCurrency === 'USD') {
+            this.exchange = this.currencies.btcToUsd;
+          } else if (this.fromCurrency === 'ETH') {
+            this.exchange = this.currencies.btcToEth;
+          } else {
+            this.exchange = 1;
+          }
+          break;
+        case 'ETH':
+          if (this.fromCurrency === 'USD') {
+            this.exchange = this.currencies.ethToUsd;
+          } else if (this.fromCurrency === 'BTC') {
+            this.exchange = this.currencies.ethToBtc;
+          } else {
+            this.exchange = 1;
+          } 
+          break;
+        case 'USD': 
+          if (this.fromCurrency === 'ETH') {
+            this.exchange = this.currencies.ethToUsd;
+          } else if (this.fromCurrency === 'BTC') {
+            this.exchange = this.currencies.btcToUsd;
+          } else {
+            this.exchange = 1; 
+          }
+          break;
+      }
+    }
   }
 }
 </script>
