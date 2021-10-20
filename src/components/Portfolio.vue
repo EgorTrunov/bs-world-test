@@ -9,14 +9,57 @@
             <p class="portfolio__rating">Оценка портфеля: {{ ratingValue }}$</p>
             <ul class="portfolio__list">
                 <span>Содержание портфеля:</span>
-                <li v-for="(currency, index) in currencies" :key="index">
+                <li v-for="(currency, index) in currenciesList" :key="index">
                     {{ currency.title }}: {{ currency.value }} {{ currency.mark }} 
                 </li>
             </ul>
             <button class="button" type="button" @click="show = !show">Перевод между валютами</button>
-            <div class="translation__box" v-if="show">
-                Проверка
-            </div>
+            <transition v-if="show">
+                <div class="transfer__inners">
+                    <label class="transfer__label">
+                        <span>Счет списания:</span>
+                        <div class="transfer__select" name="select" @click="transferFrom = !transferFrom" key="transferFrom">
+                            <p class="transfer__select--active">{{ transferFromActive }}</p>
+                            <div class="select__inner">
+                                <ul class="select__list" v-if="transferFrom">
+                                    <li class="select__item" v-for="(currency, index) in currenciesList" :key="index" @click="selectCurrency(index, 'transferFromActive')">{{ currency.title }}</li>
+                                </ul>
+                            </div>
+                            <span class="select__arrow">
+                                <img class="img__arrow" src="@/assets/arrow-select.svg" v-if="!transferFrom">
+                                <img class="img__arrow" src="@/assets/arrow-select-rotate.svg" v-else>
+                            </span>
+                        </div>
+                    </label>
+                    <label class="transfer__label">
+                        <span>Счет зачисления:</span>
+                        <div class="transfer__select" name="select" @click="transferIn = !transferIn" key="transferIn">
+                            <p class="transfer__select--active">{{ transferInActive }}</p>
+                            <div class="select__inner">
+                                <ul class="select__list" v-if="transferIn">
+                                    <li class="select__item" v-for="(currency, index) in currenciesList" :key="index" @click="selectCurrency(index, 'transferInActive')">{{ currency.title }}</li>
+                                </ul>
+                            </div>
+                            <span class="select__arrow">
+                                <img class="img__arrow" src="@/assets/arrow-select.svg" v-if="!transferIn">
+                                <img class="img__arrow" src="@/assets/arrow-select-rotate.svg" v-else>
+                            </span>
+                        </div>
+                    </label>
+                    <label class="transfer__label">
+                        <span>Сумма списания:</span>
+                        <input class="input" type="number" placeholder="Введите значение" :value="firstValue" @input="transferFromCurrency">
+                        <!-- <p>на счету: {{  }}</p> -->
+                    </label>
+                    <label class="transfer__label">
+                        <span>Сумма зачисления:</span>
+                        <input class="input" type="number" placeholder="Введите значение" :value="secondValue" @input="transferInCurrency">
+                        <!-- <p>на счету: {{  }}</p> -->
+                        <span>Курс перевода: </span>
+                    </label>
+                    <button class="button button--submiit" type="button" @click="show = !show">Подтвердить</button>
+                </div>
+            </transition>
         </div>
     </div>
 </template>
@@ -24,11 +67,12 @@
 <script>
 export default {
     name: 'Portfolio',
+    props: ['currencies'],
     data() {
         return {
             userName: 'Анатолий Геннадьевич',
             ratingValue: 100000,
-            currencies: [
+            currenciesList: [
                 {
                     title: 'USD',
                     value: '1000',
@@ -45,37 +89,119 @@ export default {
                     mark: 'Ξ'
                 },
             ],
-            show: false
+            show: false,
+            transferFrom: false,
+            transferIn: false,
+            transferFromActive: 'Не выбран',
+            transferInActive: 'Не выбран',
+            exchange: '',
+            firstValue: '',
+            secondValue: ''
+        }
+    }, 
+    methods: {
+        selectCurrency(index, value) {
+            switch(value) {
+                case 'transferFromActive':
+                    this.transferFromActive = this.currenciesList[index].title;
+                    break;
+                case 'transferInActive': 
+                    this.transferInActive = this.currenciesList[index].title;
+                    break;
+                default:
+                    break;
+            }
+        },
+        transferFromCurrency(event) {
+            this.firstValue = event.target.value;
+            this.currenciesChange();
+            if (this.transferFromActive === 'USD') {
+                this.secondValue = (this.firstValue / this.exchange).toFixed(3);
+            } else {
+                this.secondValue = (this.firstValue * this.exchange).toFixed(3);
+            }
+        },
+        transferInCurrency(event) {
+            this.secondValue = event.target.value;
+            this.currenciesChange();
+            if (this.transferInActive === 'USD') {
+                this.firstValue = (this.secondValue / this.exchange).toFixed(3);
+            } else {
+                this.firstValue = (this.secondValue * this.exchange).toFixed(3);
+            }
+        },
+        currenciesChange() {
+            switch(this.transferFromActive) {
+                case 'BTC': 
+                if (this.transferInActive === 'USD') {
+                    this.exchange = this.currencies.btcToUsd;
+                } else if (this.transferInActive === 'ETH') {
+                    this.exchange = this.currencies.btcToEth;
+                } else {
+                    this.exchange = 1;
+                }
+                break;
+                case 'ETH':
+                if (this.transferInActive === 'USD') {
+                    this.exchange = this.currencies.ethToUsd;
+                } else if (this.transferInActive === 'BTC') {
+                    this.exchange = this.currencies.ethToBtc;
+                } else {
+                    this.exchange = 1;
+                } 
+                break;
+                case 'USD': 
+                if (this.transferInActive === 'ETH') {
+                    this.exchange = this.currencies.ethToUsd;
+                } else if (this.transferInActive === 'BTC') {
+                    this.exchange = this.currencies.btcToUsd;
+                } else {
+                    this.exchange = 1; 
+                }
+                break;
+            }
         }
     }
 }
 </script>
 
 <style lang="scss" scoped>
+
+*{
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+}
+
 $text-color: #bb9f89;
 $primary-color: #27262E;
 
 %text {
-    font-size: 18px;
+    font-size: 15px;
     line-height: 2em;
     color: $text-color;
 }
 
 .portfolio__inner {
-  margin: 0 auto;
-  max-width: 1000px;
+    margin: 0 auto;
+    max-width: 1000px;
 }
 
 .portfolio__header {
     display: flex;
     align-items: center;
-    margin-bottom: 25px;
+    margin-bottom: 10px;
     .svg--avatar {
         margin-right: 20px;
         fill: $text-color;
     }
     h1 {    
-        font-size: 24px;
+        font-size: 20px;
         line-height: 2.56em; 
     }
 }
@@ -83,10 +209,10 @@ $primary-color: #27262E;
 .portfolio__content {
     .portfolio__rating {
         @extend %text;
-        margin-bottom: 20px;
+        margin-bottom: 15px;
     }
     .portfolio__list {
-        margin-bottom: 25px;
+        margin-bottom: 15px;
         span {
             @extend %text;
         }
@@ -96,8 +222,86 @@ $primary-color: #27262E;
         }
     }
     .button {
-        width: 250px;
+        width: 220px;
         margin-bottom: 20px;
+        height: 40px;
+        padding: 5px;
     }
+}
+
+%text-transfer {
+    font-size: 15px;
+    line-height: 12px;
+    color: $text-color;
+}
+
+%style-select {
+    width: 125px;
+    height: 35px;
+    border: 2px solid $text-color;
+    padding-left: 5px;
+    background-color: $primary-color;
+    color: $text-color;
+}
+
+%input {
+    display: block;
+    background: $primary-color;
+    color: $text-color;
+    border: 2px solid $text-color;
+    height: 35px;
+    padding: 5px 10px;
+}
+
+.transfer__label {
+    max-width: 420px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 15px;
+    span {
+        @extend %text-transfer;
+    }
+    .transfer__select {
+        @extend %style-select;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        cursor: pointer;
+    }
+    .select__arrow {
+        padding: 8px;
+    }
+    .select__inner {
+        position: absolute;
+        width: 125px;
+        top: 33px;
+        right: -2px;
+        z-index: 2;
+        background: $text-color;
+        color: $primary-color;
+        .select__list {
+            list-style: none;
+        }
+        .select__item {
+            padding-left: 12px;
+            padding-top: 5px;
+            height: 28px;
+        }
+        .select__item:hover {
+            background-color: $primary-color;
+            color: $text-color;
+            transition: 0.8s;
+        }
+    }
+    .input {
+        @extend %input;
+    }
+}
+
+.button--submiit {
+    margin-top: 15px;
 }
 </style>

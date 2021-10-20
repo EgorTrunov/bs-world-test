@@ -12,7 +12,7 @@
     </header>
     <main class="main">
       <Converter v-if="tabList[0].isActive" :currencies="currencies"/>
-      <Portfolio v-if="tabList[1].isActive"/>
+      <Portfolio v-if="tabList[1].isActive" :currencies="currencies"/>
     </main>
   </div>
 </template>
@@ -131,7 +131,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 80px;
+  margin-bottom: 50px;
   .header__tab:first-of-type {
     margin-right: 20px;
   }
