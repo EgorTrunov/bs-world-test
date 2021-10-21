@@ -6,7 +6,14 @@
 			<h1>Здравствуйте, {{ userName }}</h1>
 		</div>
 		<div class="portfolio__content">
-			<p class="portfolio__rating">Оценка портфеля: {{ ratingValue }}$</p>
+			<div class="rating__inner">
+				<p class="portfolio__rating">Оценка портфеля: {{ ratingValue }}$</p>
+				<button class="button button--recharge" @click="showRecharge = !showRecharge">Пополнить</button>
+				<div class="recharge-balance__inner" v-if="showRecharge">
+					<input class="input--recharge" type="number" placeholder="Введите значение" @input="rechargeBalance">
+					<button class="button button--submiit" type="button" @click="showRecharge = !showRecharge; rechargeBalanceConfirm()">Подтвердить</button>
+				</div>
+			</div>
 			<ul class="portfolio__list">
 				<span>Содержание портфеля:</span>
 				<li v-for="(currency, index) in currenciesList" :key="index">
@@ -68,6 +75,9 @@
 export default {
 	name: 'Portfolio',
 	props: ['currencies'],
+	mounted() {
+		this.checkRatingValue();
+	},
 	data() {
 		return {
 			userName: 'Анатолий Геннадьевич',
@@ -89,6 +99,7 @@ export default {
 					mark: 'Ξ'
 				},
 			],
+			showRecharge: false,
 			show: false,
 			transferFrom: false,
 			transferIn: false,
@@ -171,6 +182,17 @@ export default {
 					this.currenciesList[title].value = this.currenciesList[title].value - Number(this.firstValue);
 				}
 			}
+			this.checkRatingValue();
+		},
+		checkRatingValue() {
+			this.ratingValue = ((this.currenciesList[1].value * this.currencies.btcToUsd) + (this.currenciesList[2].value * this.currencies.ethToUsd) + this.currenciesList[0].value).toFixed(2);
+		},
+		rechargeBalance(event) {
+		this.rechargeValue = event.target.value;
+		},
+		rechargeBalanceConfirm() {
+			this.currenciesList[0].value = this.currenciesList[0].value + Number(this.rechargeValue);
+			this.transferConfirm();
 		}
 	}
 }
@@ -198,47 +220,6 @@ $primary-color: #27262E;
 	color: $text-color;
 }
 
-.portfolio__inner {
-	margin: 0 auto;
-	max-width: 1000px;
-}
-
-.portfolio__header {
-	display: flex;
-	align-items: center;
-	margin-bottom: 10px;
-	.svg--avatar {
-			margin-right: 20px;
-			fill: $text-color;
-	}
-	h1 {    
-			font-size: 20px;
-			line-height: 2.56em; 
-	}
-}
-
-.portfolio__content {
-	.portfolio__rating {
-			@extend %text;
-			margin-bottom: 15px;
-	}
-	.portfolio__list {
-			margin-bottom: 15px;
-			span {
-					@extend %text;
-			}
-			li {
-					margin-left: 15px;
-					@extend %text; 
-			}
-	}
-	.button {
-			width: 220px;
-			margin-bottom: 20px;
-			height: 40px;
-			padding: 5px;
-	}
-}
 
 %text-transfer {
 	font-size: 15px;
@@ -262,6 +243,77 @@ $primary-color: #27262E;
 	border: 2px solid $text-color;
 	height: 35px;
 	padding: 5px 10px;
+}
+
+.portfolio__inner {
+	margin: 0 auto;
+	max-width: 1000px;
+}
+
+.portfolio__header {
+	display: flex;
+	align-items: center;
+	margin-bottom: 10px;
+	.svg--avatar {
+			margin-right: 20px;
+			fill: $text-color;
+	}
+	h1 {    
+			font-size: 20px;
+			line-height: 2.56em; 
+	}
+}
+
+.portfolio__content {
+	.rating__inner {
+		max-width: 520px;
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		align-items: center;
+		.portfolio__rating {
+				@extend %text;
+				margin-bottom: 15px;
+		}
+		.button--recharge {
+			width: 100px;
+			padding: 1px;
+			height: 30px;
+		}
+		.recharge-balance__inner {
+			display: flex;
+			align-items: center;
+			margin-bottom: 10px;
+			.input--recharge {
+				@extend %input;
+				width: 150px;
+				height: 30px;
+				margin-right: 10px;
+			}
+			.button--submiit {
+				display: block;
+				width: 100px;
+				height: 30px;
+				padding: 1px;
+				margin: 0;
+			}
+		}
+	}
+	.portfolio__list {
+			margin-bottom: 15px;
+			span {
+					@extend %text;
+			}
+			li {
+					margin-left: 15px;
+					@extend %text; 
+			}
+	}
+	.button {
+			width: 220px;
+			margin-bottom: 20px;
+			height: 40px;
+			padding: 5px;
+	}
 }
 
 .transfer__label {

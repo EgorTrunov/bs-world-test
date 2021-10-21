@@ -49,7 +49,7 @@ export default {
       }
     }
   },
-  async created (){
+  async created () {
       await this.currentRateBtc();
       await this.currentRateEth();
   },
