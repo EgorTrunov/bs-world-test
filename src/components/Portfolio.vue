@@ -71,6 +71,7 @@
 			</div>
 		</div>
 		<div class="chart__column">
+			<h1>Распределение валюты в портфеле</h1>
 			<ChartPiePortf :currencies-list="currenciesList"/>
 		</div>
 	</div>
@@ -93,7 +94,7 @@ export default {
 			currenciesList: [
 				{
 					title: 'USD',
-					value: 1000,
+					value: 10000,
 					mark: '$',
 					actualRate: 1
 
@@ -107,9 +108,9 @@ export default {
 				},
 				{
 					title: 'ETH',
-					value: 10,
+					value: 100,
 					mark: 'Ξ',
-					actualRate: this.currencies.btcToEth
+					actualRate: this.currencies.ethToUsd
 				},
 			],
 			showRecharge: false,
@@ -381,5 +382,10 @@ $primary-color: #27262E;
 
 .button--submiit {
 	margin-top: 15px;
+}
+
+h1 {
+	@extend %text;
+	text-align: center;
 }
 </style>
