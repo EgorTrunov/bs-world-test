@@ -94,17 +94,22 @@ export default {
 				{
 					title: 'USD',
 					value: 1000,
-					mark: '$'
+					mark: '$',
+					actualRate: 1
+
 				},
 				{
 					title: 'BTC',
 					value: 1,
-					mark: '฿'
+					mark: '฿',
+					actualRate: this.currencies.btcToUsd
+
 				},
 				{
 					title: 'ETH',
 					value: 10,
-					mark: 'Ξ'
+					mark: 'Ξ',
+					actualRate: this.currencies.btcToEth
 				},
 			],
 			showRecharge: false,
