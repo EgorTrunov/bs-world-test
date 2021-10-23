@@ -85,6 +85,11 @@ export default {
 	name: 'Portfolio',
 	props: ['currencies'],
 	mounted() {
+		if (window.globalData) {
+			console.log(window.globalData);
+			if (window.globalData.usdValue) 
+				this.currenciesList[0].value = window.globalData.usdValue;			
+		}
 		this.checkRatingValue();
 	},
 	data() {
@@ -108,7 +113,7 @@ export default {
 				},
 				{
 					title: 'ETH',
-					value: 100,
+					value: 10,
 					mark: 'Ξ',
 					actualRate: this.currencies.ethToUsd
 				},
@@ -200,6 +205,7 @@ export default {
 		},
 		checkRatingValue() {
 			this.ratingValue = ((this.currenciesList[1].value * this.currencies.btcToUsd) + (this.currenciesList[2].value * this.currencies.ethToUsd) + this.currenciesList[0].value).toFixed(2);
+			window.globalData.usdValue = this.currenciesList[0].value;
 		},
 		rechargeBalance(event) {
 		this.rechargeValue = event.target.value;

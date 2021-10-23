@@ -25,16 +25,21 @@
         <input class="input" type="number" placeholder="Введите значение" v-bind:value="secondValue" v-on:input="fromValueToConverter">
       </div>
     </div>
-    {{ marketCart }}
+    <div class="line-chart">
+      <LineChartConv :market-chart="marketChart"/>
+    </div>
   </div>
 </template>
 
 <script>
+import LineChartConv from './LineChartConv.vue'
+
 const CoinGecko = require('coingecko-api');
 const CoinGeckoClient = new CoinGecko();
 
 export default {
   name: 'Converter',
+  components: { LineChartConv },
   props: ['currencies'],
   data() {
     return {
@@ -66,7 +71,7 @@ export default {
           isActive: false,
         }
       ],
-      marketCart: {
+      marketChart: {
         lastDays: '',
         marketChartEthToBtc: '',
         marketChartEthToUsd: '',
@@ -81,10 +86,11 @@ export default {
     }
   },
   async created () {
-      await this.marketChartBtcToUsd();
-      await this.marketChartBtcToEth();
-      await this.marketChartEthToUsd();
-      await this.marketChartEthToBtc(); 
+    await this.marketChartBtcToUsd();
+    await this.marketChartBtcToEth();
+    await this.marketChartEthToUsd();
+    await this.marketChartEthToBtc();
+    this.toValueFromConverter(); 
   },
   methods: {
     async marketChartBtcToUsd() {
@@ -96,12 +102,12 @@ export default {
       for (let i = data.data.prices.length - 1; i >= 0; i-=24) {
         let date = data.data.prices[i][0];
         let value = Number(data.data.prices[i][1].toFixed(3));
-        let normalDate = new Date(date);
+        let normalDate = String(new Date(date));
         valueArray.unshift(value)
-        dateArray.unshift(normalDate);
+        dateArray.unshift(normalDate.slice(0, 24));
       }
-      this.marketCart.lastDays = dateArray; 
-      this.marketCart.marketChartBtcToUsd = valueArray; 
+      this.marketChart.lastDays = dateArray; 
+      this.marketChart.marketChartBtcToUsd = valueArray;
     },
     async marketChartBtcToEth() {
       let data = await CoinGeckoClient.coins.fetchMarketChart('bitcoin', ({
@@ -113,7 +119,7 @@ export default {
         let value = Number(data.data.prices[i][1].toFixed(3));
         valueArray.unshift(value);
       }
-      this.marketCart.marketChartBtcToEth = valueArray;
+      this.marketChart.marketChartBtcToEth = valueArray;
     },
     async marketChartEthToUsd() {
       let data = await CoinGeckoClient.coins.fetchMarketChart('ethereum', ({
@@ -124,7 +130,7 @@ export default {
         let value = Number(data.data.prices[i][1].toFixed(3));
         valueArray.unshift(value);
       }
-      this.marketCart.marketChartEthToUsd = valueArray; 
+      this.marketChart.marketChartEthToUsd = valueArray; 
     },
     async marketChartEthToBtc() {
       let data = await CoinGeckoClient.coins.fetchMarketChart('ethereum', ({
@@ -136,7 +142,7 @@ export default {
         let value = Number(data.data.prices[i][1].toFixed(4));
         valueArray.unshift(value);
       }
-      this.marketCart.marketChartEthToBtc = valueArray;
+      this.marketChart.marketChartEthToBtc = valueArray;
     },
     selectCurrency(index) {
       this.currencyList.forEach((element) => {
@@ -144,6 +150,7 @@ export default {
       });
       this.currencyList[index].isActive = true;
       this.toCurrency = this.currencyList[index].text;
+      this.toValueFromConverter();
     },
     selectConversion(index) {
       this.conversionList.forEach((element) => {
@@ -151,9 +158,11 @@ export default {
       });
       this.conversionList[index].isActive = true;
       this.fromCurrency = this.conversionList[index].text;
+      this.toValueFromConverter();
     },
     toValueFromConverter(event) {
-      this.firstValue = event.target.value;
+      if (event)
+        this.firstValue = event.target.value;
       this.currenciesChange();
       if (this.toCurrency === 'USD') {
         this.secondValue = (this.firstValue / this.exchange).toFixed(3);

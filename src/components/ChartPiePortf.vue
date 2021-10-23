@@ -14,7 +14,8 @@ export default defineComponent({
   props: ['currenciesList'],
 
   setup(props) {
-    const data = ref([`${props.currenciesList[0].actualRate * props.currenciesList[0].value}`, `${props.currenciesList[1].value * props.currenciesList[1].actualRate}`, `${props.currenciesList[2].value * props.currenciesList[2].actualRate}`]);
+    // const data = ref([props.currenciesList[0].value, props.currenciesList[1].value, props.currenciesList[2].value]);
+    const data = ref();
     const doughnutRef = ref();
     const options = ref({
       responsive: true,
@@ -30,12 +31,11 @@ export default defineComponent({
       labels: [`${props.currenciesList[0].title}: ${props.currenciesList[0].value} ${props.currenciesList[0].mark}`, `${props.currenciesList[1].title}: ${props.currenciesList[1].value} ${props.currenciesList[1].mark}`, `${props.currenciesList[2].title}: ${props.currenciesList[2].value} ${props.currenciesList[2].mark}`],
       datasets: [
         {
-          data: data.value,
+          data: [props.currenciesList[0].value, (props.currenciesList[1].value * props.currenciesList[1].actualRate), (props.currenciesList[2].value * props.currenciesList[2].actualRate)],
           backgroundColor: ['#8C7D70', '#BB9F89', '#7A4F2D'],
         },
       ],
     }));
-
     return { testData, doughnutRef, options, data };
   },
 });
