@@ -47,16 +47,11 @@ export default {
         ethToUsd: 0,
         ethToBtc: 0,
       },
-      lastDays: ''
     }
   },
   async created () {
       await this.currentRateBtc();
       await this.currentRateEth();
-      await this.marketChartBtcToUsd();
-      await this.marketChartBtcToEth();
-      await this.marketChartEthToUsd();
-      await this.marketChartEthToBtc(); 
   },
   methods: {
     selectTab(index) {
@@ -76,53 +71,6 @@ export default {
       this.currencies.ethToUsd = data.data.market_data.current_price.usd;
       this.currencies.ethToBtc = data.data.market_data.current_price.btc;
       // console.log('ethtoUsd: ' + this.currencies.ethToUsd, 'ethToBtc: ' + this.currencies.ethToBtc);
-    },
-    async marketChartBtcToUsd() {
-      let data = await CoinGeckoClient.coins.fetchMarketChart('bitcoin', ({
-        days: 13,
-      }));
-      let dateArray = [];
-      let valueArray = [];
-      for (let i = data.data.prices.length - 1; i >= 0; i-=24) {
-        let date = data.data.prices[i][0];
-        let value = Number(data.data.prices[i][1].toFixed(3));
-        let normalDate = new Date(date);
-        valueArray.unshift(value)
-        dateArray.unshift(normalDate);
-      }
-      this.lastDays = dateArray;  
-    },
-    async marketChartBtcToEth() {
-      let data = await CoinGeckoClient.coins.fetchMarketChart('bitcoin', ({
-        days: 13,
-        vs_currency: 'eth'
-      }));
-      let valueArray = [];
-      for (let i = data.data.prices.length - 1; i >= 0; i-=24) {
-        let value = Number(data.data.prices[i][1].toFixed(3));
-        valueArray.unshift(value);
-      }
-    },
-    async marketChartEthToUsd() {
-      let data = await CoinGeckoClient.coins.fetchMarketChart('ethereum', ({
-        days: 13,
-      }));
-      let valueArray = [];
-      for (let i = data.data.prices.length - 1; i >= 0; i-=24) {
-        let value = Number(data.data.prices[i][1].toFixed(3));
-        valueArray.unshift(value);
-      }
-    },
-    async marketChartEthToBtc() {
-      let data = await CoinGeckoClient.coins.fetchMarketChart('ethereum', ({
-        days: 13,
-        vs_currency: 'btc'
-      }));
-      let valueArray = [];
-      for (let i = data.data.prices.length - 1; i >= 0; i-=24) {
-        let value = Number(data.data.prices[i][1].toFixed(4));
-        valueArray.unshift(value);
-      }
     },
   }
 }
