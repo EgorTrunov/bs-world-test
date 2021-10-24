@@ -26,7 +26,7 @@
       </div>
     </div>
     <div class="line-chart">
-      <LineChartConv :market-chart="marketChart"/>
+      <LineChartConv :market-chart="marketChart" v-if="this.toCurrency !== this.fromCurrency"/>
     </div>
   </div>
 </template>
@@ -85,6 +85,9 @@ export default {
       valueMarketChartEthToUsd: '',
       valueMarketChartBtcToEth: '',
       valueMarketChartBtcToUsd: '',
+      valueMarketChartUsdToEth: '',
+      valueMarketChartUsdToBtc: '',
+      dollarsLastDays: '',
     }
   },
   async created () {
@@ -92,6 +95,8 @@ export default {
     await this.marketChartBtcToEth();
     await this.marketChartEthToUsd();
     await this.marketChartEthToBtc();
+    await this.marketChartUsdToBtc();
+    await this.marketChartUsdToEth();
     this.toValueFromConverter(); 
   },
   methods: {
@@ -146,40 +151,73 @@ export default {
       }
       this.valueMarketChartEthToBtc = valueArray;
     },
+    async marketChartUsdToBtc() {
+        let data = await CoinGeckoClient.coins.fetchMarketChart('dollars', ({
+        days: 16,
+        vs_currency: 'btc'
+      }));
+      let dateArray = [];
+      let valueArray = [];
+      for (let i = data.data.prices.length - 1; i >= 0; i-=3) {
+        let date = data.data.prices[i][0];
+        let value = Number(data.data.prices[i][1].toFixed(7));
+        let normalDate = String(new Date(date));
+        valueArray.unshift(value);
+        dateArray.unshift(normalDate.slice(0, 15));
+      }
+      this.valueMarketChartUsdToBtc = valueArray;
+      this.dollarsLastDays = dateArray;
+    },
+      async marketChartUsdToEth() {
+        let data = await CoinGeckoClient.coins.fetchMarketChart('dollars', ({
+        days: 16,
+        vs_currency: 'eth'
+      }));
+      let valueArray = [];
+      for (let i = data.data.prices.length - 1; i >= 0; i-=3) {
+        let value = Number(data.data.prices[i][1].toFixed(6));
+        valueArray.unshift(value);
+      }
+      this.valueMarketChartUsdToEth = valueArray;
+    },
     selectCurrency(index) {
+      this.toCurrency = this.currencyList[index].text;
       this.currencyList.forEach((element) => {
         element.isActive = false;
       });
-      this.currencyList[index].isActive = true;
-      this.toCurrency = this.currencyList[index].text;
-      this.toValueFromConverter();
+      if (this.toCurrency !== this.fromCurrency)
+        this.currencyList[index].isActive = true;
+        this.toValueFromConverter();
     },
     selectConversion(index) {
+      this.fromCurrency = this.conversionList[index].text;
       this.conversionList.forEach((element) => {
         element.isActive = false;
       });
-      this.conversionList[index].isActive = true;
-      this.fromCurrency = this.conversionList[index].text;
-      this.toValueFromConverter();
+      if (this.toCurrency !== this.fromCurrency)
+        this.conversionList[index].isActive = true;
+        this.toValueFromConverter();
     },
     toValueFromConverter(event) {
-      if (event)
-        this.firstValue = event.target.value;
-      this.currenciesChange();
-      if (this.toCurrency === 'USD') {
-        this.secondValue = (this.firstValue / this.exchange).toFixed(3);
-      } else {
-        this.secondValue = (this.firstValue * this.exchange).toFixed(3);
-      }
+      if (this.toCurrency !== this.fromCurrency)
+        if (event)
+          this.firstValue = event.target.value;
+        this.currenciesChange();
+        if (this.toCurrency === 'USD') {
+          this.secondValue = (this.firstValue / this.exchange).toFixed(5);
+        } else {
+          this.secondValue = (this.firstValue * this.exchange).toFixed(2);
+        }
     },
     fromValueToConverter(event) {
-      this.secondValue = event.target.value;
-      this.currenciesChange();
-        if (this.fromCurrency === 'USD') {
-        this.firstValue = (this.secondValue / this.exchange).toFixed(3);
-      } else {
-        this.firstValue = (this.secondValue * this.exchange).toFixed(3);
-      }
+      if (this.toCurrency !== this.fromCurrency)
+        this.secondValue = event.target.value;
+        this.currenciesChange();
+          if (this.fromCurrency === 'USD') {
+          this.firstValue = (this.secondValue / this.exchange).toFixed(3);
+        } else {
+          this.firstValue = (this.secondValue * this.exchange).toFixed(2);
+        }
     },
     currenciesChange() {
       switch(this.toCurrency) {
@@ -212,12 +250,14 @@ export default {
         case 'USD': 
           if (this.fromCurrency === 'ETH') {
             this.exchange = this.currencies.ethToUsd;
-            this.marketChart.title = 'ETH → USD';
-            this.marketChart.marketChartValue = this.valueMarketChartEthToUsd;
+            this.marketChart.title = 'USD → ETH';
+            this.marketChart.marketChartValue = this.valueMarketChartUsdToEth;
+            this.marketChart.lastDays = this.dollarsLastDays;
           } else if (this.fromCurrency === 'BTC') {
             this.exchange = this.currencies.btcToUsd;
-            this.marketChart.title = 'BTC → USD';
-            this.marketChart.marketChartValue = this.valueMarketChartBtcToUsd;
+            this.marketChart.title = 'USD → BTC';
+            this.marketChart.marketChartValue = this.valueMarketChartUsdToBtc;
+            this.marketChart.lastDays = this.dollarsLastDays;
           } else {
             this.exchange = 1; 
           }
