@@ -64,13 +64,11 @@ export default {
       let data = await CoinGeckoClient.coins.fetch('bitcoin', {});
       this.currencies.btcToUsd = data.data.market_data.current_price.usd;
       this.currencies.btcToEth = data.data.market_data.current_price.eth;
-      // console.log('btcToUsd: ' + this.currencies.btcToUsd, 'btcToEth: ' + this.currencies.btcToEth);
     },
     async currentRateEth() {
       let data = await CoinGeckoClient.coins.fetch('ethereum', {});
       this.currencies.ethToUsd = data.data.market_data.current_price.usd;
       this.currencies.ethToBtc = data.data.market_data.current_price.btc;
-      // console.log('ethtoUsd: ' + this.currencies.ethToUsd, 'ethToBtc: ' + this.currencies.ethToBtc);
     },
   }
 }

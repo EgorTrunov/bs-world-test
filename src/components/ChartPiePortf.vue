@@ -57,5 +57,4 @@ export default defineComponent({
       max-width: 300px;
     }
   }
-
 </style>
