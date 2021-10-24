@@ -1,6 +1,6 @@
 <template>
   <div class="chart"> 
-  <DoughnutChart :chartData="testData" :options="options" />
+  <DoughnutChart :chartData="testData" :options="options"/>
   </div>
 </template>
 
@@ -14,11 +14,11 @@ export default defineComponent({
   props: ['currenciesList'],
 
   setup(props) {
-    // const data = ref([props.currenciesList[0].value, props.currenciesList[1].value, props.currenciesList[2].value]);
     const data = ref();
     const doughnutRef = ref();
     const options = ref({
       responsive: true,
+      maintainAspectRatio: true,
       plagins: {
         title: {
           display: true,
@@ -32,7 +32,7 @@ export default defineComponent({
       datasets: [
         {
           data: [props.currenciesList[0].value, (props.currenciesList[1].value * props.currenciesList[1].actualRate), (props.currenciesList[2].value * props.currenciesList[2].actualRate)],
-          backgroundColor: ['#8C7D70', '#BB9F89', '#7A4F2D'],
+          backgroundColor: ['#BA9375', '#BB9F89', '#D1B58E'],
         },
       ],
     }));
@@ -40,3 +40,22 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="scss">
+  .chart {
+    max-height: 400px;
+    height: auto;
+  }
+
+  @media (max-width: 450px) {
+    .chart {
+      max-width: 350px;
+    }
+  }
+  @media (max-width: 380px) {
+    .chart {
+      max-width: 300px;
+    }
+  }
+
+</style>

@@ -73,16 +73,18 @@ export default {
       ],
       marketChart: {
         lastDays: '',
-        marketChartEthToBtc: '',
-        marketChartEthToUsd: '',
-        marketChartBtcToEth: '',
-        marketChartBtcToUsd: '',
+        marketChartValue: '',
+        titleChart: ''
       },
       firstValue: 1,
       secondValue: this.currencies.btcToUsd,
       toCurrency: 'BTC',
       fromCurrency: 'USD',
-      exchange: ''
+      exchange: '',
+      valueMarketChartEthToBtc: '',
+      valueMarketChartEthToUsd: '',
+      valueMarketChartBtcToEth: '',
+      valueMarketChartBtcToUsd: '',
     }
   },
   async created () {
@@ -104,10 +106,10 @@ export default {
         let value = Number(data.data.prices[i][1].toFixed(3));
         let normalDate = String(new Date(date));
         valueArray.unshift(value)
-        dateArray.unshift(normalDate.slice(0, 24));
+        dateArray.unshift(normalDate.slice(0, 15));
       }
       this.marketChart.lastDays = dateArray; 
-      this.marketChart.marketChartBtcToUsd = valueArray;
+      this.valueMarketChartBtcToUsd = valueArray;
     },
     async marketChartBtcToEth() {
       let data = await CoinGeckoClient.coins.fetchMarketChart('bitcoin', ({
@@ -119,7 +121,7 @@ export default {
         let value = Number(data.data.prices[i][1].toFixed(3));
         valueArray.unshift(value);
       }
-      this.marketChart.marketChartBtcToEth = valueArray;
+      this.valueMarketChartBtcToEth = valueArray;
     },
     async marketChartEthToUsd() {
       let data = await CoinGeckoClient.coins.fetchMarketChart('ethereum', ({
@@ -130,7 +132,7 @@ export default {
         let value = Number(data.data.prices[i][1].toFixed(3));
         valueArray.unshift(value);
       }
-      this.marketChart.marketChartEthToUsd = valueArray; 
+      this.valueMarketChartEthToUsd = valueArray; 
     },
     async marketChartEthToBtc() {
       let data = await CoinGeckoClient.coins.fetchMarketChart('ethereum', ({
@@ -142,7 +144,7 @@ export default {
         let value = Number(data.data.prices[i][1].toFixed(4));
         valueArray.unshift(value);
       }
-      this.marketChart.marketChartEthToBtc = valueArray;
+      this.valueMarketChartEthToBtc = valueArray;
     },
     selectCurrency(index) {
       this.currencyList.forEach((element) => {
@@ -184,8 +186,12 @@ export default {
         case 'BTC': 
           if (this.fromCurrency === 'USD') {
             this.exchange = this.currencies.btcToUsd;
+            this.marketChart.title = 'BTC → USD';
+            this.marketChart.marketChartValue = this.valueMarketChartBtcToUsd;
           } else if (this.fromCurrency === 'ETH') {
             this.exchange = this.currencies.btcToEth;
+            this.marketChart.title = 'BTC → ETH';
+            this.marketChart.marketChartValue = this.valueMarketChartBtcToEth;
           } else {
             this.exchange = 1;
           }
@@ -193,8 +199,12 @@ export default {
         case 'ETH':
           if (this.fromCurrency === 'USD') {
             this.exchange = this.currencies.ethToUsd;
+            this.marketChart.title = 'ETH → USD';
+            this.marketChart.marketChartValue = this.valueMarketChartEthToUsd;
           } else if (this.fromCurrency === 'BTC') {
             this.exchange = this.currencies.ethToBtc;
+            this.marketChart.title = 'ETH → BTC';
+            this.marketChart.marketChartValue = this.valueMarketChartEthToBtc;
           } else {
             this.exchange = 1;
           } 
@@ -202,8 +212,12 @@ export default {
         case 'USD': 
           if (this.fromCurrency === 'ETH') {
             this.exchange = this.currencies.ethToUsd;
+            this.marketChart.title = 'ETH → USD';
+            this.marketChart.marketChartValue = this.valueMarketChartEthToUsd;
           } else if (this.fromCurrency === 'BTC') {
             this.exchange = this.currencies.btcToUsd;
+            this.marketChart.title = 'BTC → USD';
+            this.marketChart.marketChartValue = this.valueMarketChartBtcToUsd;
           } else {
             this.exchange = 1; 
           }
@@ -253,11 +267,12 @@ $primary-color: #27262E;
 h1 {
   font-size: 24px;
   line-height: 2.56em; 
-  margin: 0 auto 50px;
+  margin: 0 auto 15px;
   text-align: center;
 }
 
 .currency__converter {
+  margin-bottom: 15px;
   .currency__pick {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -274,6 +289,7 @@ h1 {
     justify-content: flex-end;
   }
   .currency__item {
+    user-select: none;
     border: 3px solid $text-color;
     cursor: pointer;
     padding: 10px 35px;

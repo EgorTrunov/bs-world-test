@@ -1,6 +1,6 @@
 <template>
   <div class="chart"> 
-    <LineChart :chartData="testData" :options="options" />
+    <LineChart :chartData="testData" :options="options" style="position: relative; margin: 0 auto; width:100%; max-height: 330px"/>
   </div>
 </template>
 
@@ -18,14 +18,16 @@ export default defineComponent({
     const lineRef = ref();
     const options = ref({
       responsive: true,
+      maintainAspectRatio: false,
+      aspectRatio: 3,
     });
 
     const testData = computed(() => ({
       labels: props.marketChart.lastDays,
       datasets: [
         {
-          label: 'BTC',
-          data: props.marketChart.marketChartBtcToUsd,
+          label: props.marketChart.title,
+          data: props.marketChart.marketChartValue,
           borderJoinStyle: 'round',
           lineTension: 0,
           borderColor: '#bb9f89',

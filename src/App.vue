@@ -131,9 +131,13 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 50px;
+  margin-bottom: 20px;
   .header__tab:first-of-type {
     margin-right: 20px;
+  }
+  .tab--active {
+    background: $text-color;
+    color: $primary-color;
   }
 }
 

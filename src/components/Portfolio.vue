@@ -7,13 +7,13 @@
 				<h1>Здравствуйте, {{ userName }}</h1>
 			</div>
 			<div class="portfolio__content">
-				<div class="rating__inner">
-					<p class="portfolio__rating">Оценка портфеля: {{ ratingValue }}$</p>
+				<div class="balance__inner">
+					<p class="portfolio__balance">Текущий балланс: {{ this.currenciesList[0].value }} {{ this.currenciesList[0].mark }}</p>
 					<button class="button button--recharge" @click="showRecharge = !showRecharge">Пополнить</button>
-					<div class="recharge-balance__inner" v-if="showRecharge">
-						<input class="input--recharge" type="number" placeholder="Введите значение" @input="rechargeBalance">
-						<button class="button button--submiit" type="button" @click="showRecharge = !showRecharge; rechargeBalanceConfirm()">Подтвердить</button>
-					</div>
+				</div>
+				<div class="recharge-balance__inner" v-if="showRecharge">
+					<input class="input--recharge" type="number" placeholder="Введите значение" @input="rechargeBalance">
+					<button class="button button--submiit" type="button" @click="showRecharge = !showRecharge; rechargeBalanceConfirm()">Подтвердить</button>
 				</div>
 				<ul class="portfolio__list">
 					<span>Содержание портфеля:</span>
@@ -21,56 +21,52 @@
 						{{ currency.title }}: {{ currency.value }} {{ currency.mark }} 
 					</li>
 				</ul>
-				<button class="button" type="button" @click="show = !show">Перевод между валютами</button>
-				<transition v-if="show">
-					<div class="transfer__inners">
-						<label class="transfer__label">
-							<span>Счет списания:</span>
-							<div class="transfer__select" name="select" @click="transferFrom = !transferFrom" key="transferFrom">
-								<p class="transfer__select--active">{{ transferFromActive }}</p>
-								<div class="select__inner">
-									<ul class="select__list" v-if="transferFrom">
-										<li class="select__item" v-for="(currency, index) in currenciesList" :key="index" @click="selectCurrency(index, 'transferFromActive')">{{ currency.title }}</li>
-									</ul>
-								</div>
-								<span class="select__arrow">
-									<img class="img__arrow" src="@/assets/arrow-select.svg" v-if="!transferFrom">
-									<img class="img__arrow" src="@/assets/arrow-select-rotate.svg" v-else>
-								</span>
+				<button class="button" type="button" @click="show = !show">Покупка / продажа активов</button>
+				<div class="transfer__inners" v-if="show">
+					<label class="transfer__label">
+						<span>Счет списания:</span>
+						<div class="transfer__select" name="select" @click="transferFrom = !transferFrom" key="transferFrom">
+							<p class="transfer__select--active">{{ transferFromActive }}</p>
+							<div class="select__inner">
+								<ul class="select__list" v-if="transferFrom">
+									<li class="select__item" v-for="(currency, index) in currenciesList" :key="index" @click="selectCurrency(index, 'transferFromActive')">{{ currency.title }}</li>
+								</ul>
 							</div>
-						</label>
-						<label class="transfer__label">
-							<span>Счет зачисления:</span>
-							<div class="transfer__select" name="select" @click="transferIn = !transferIn" key="transferIn">
-								<p class="transfer__select--active">{{ transferInActive }}</p>
-								<div class="select__inner">
-									<ul class="select__list" v-if="transferIn">
-										<li class="select__item" v-for="(currency, index) in currenciesList" :key="index" @click="selectCurrency(index, 'transferInActive')">{{ currency.title }}</li>
-									</ul>
-								</div>
-								<span class="select__arrow">
-									<img class="img__arrow" src="@/assets/arrow-select.svg" v-if="!transferIn">
-									<img class="img__arrow" src="@/assets/arrow-select-rotate.svg" v-else>
-								</span>
+							<span class="select__arrow">
+								<img class="img__arrow" src="@/assets/arrow-select.svg" v-if="!transferFrom">
+								<img class="img__arrow" src="@/assets/arrow-select-rotate.svg" v-else>
+							</span>
+						</div>
+					</label>
+					<label class="transfer__label">
+						<span>Счет зачисления:</span>
+						<div class="transfer__select" name="select" @click="transferIn = !transferIn" key="transferIn">
+							<p class="transfer__select--active">{{ transferInActive }}</p>
+							<div class="select__inner">
+								<ul class="select__list" v-if="transferIn">
+									<li class="select__item" v-for="(currency, index) in currenciesList" :key="index" @click="selectCurrency(index, 'transferInActive')">{{ currency.title }}</li>
+								</ul>
 							</div>
-						</label>
-						<label class="transfer__label">
-							<span>Сумма списания:</span>
-							<input class="input" type="number" placeholder="Введите значение" :value="firstValue" @input="transferFromCurrency">
-							<!-- <p>на счету: {{  }}</p> -->
-						</label>
-						<label class="transfer__label">
-							<span>Сумма зачисления:</span>
-							<input class="input" type="number" placeholder="Введите значение" :value="secondValue" @input="transferInCurrency">
-							<!-- <p>на счету: {{  }}</p> -->
-							<span>Курс перевода: </span>
-						</label>
-						<button class="button button--submiit" type="button" @click="show = !show; transferConfirm()">Подтвердить</button>
-					</div>
-				</transition>
+							<span class="select__arrow">
+								<img class="img__arrow" src="@/assets/arrow-select.svg" v-if="!transferIn">
+								<img class="img__arrow" src="@/assets/arrow-select-rotate.svg" v-else>
+							</span>
+						</div>
+					</label>
+					<label class="transfer__label">
+						<span>Сумма списания:</span>
+						<input class="input" type="number" placeholder="Введите значение" :value="firstValue" @input="transferFromCurrency">
+					</label>
+					<label class="transfer__label">
+						<span>Сумма зачисления:</span>
+						<input class="input" type="number" placeholder="Введите значение" :value="secondValue" @input="transferInCurrency">
+					</label>
+					<button class="button button--submiit" type="button" @click="show = !show; transferConfirm()">Подтвердить</button>
+				</div>
 			</div>
 		</div>
 		<div class="chart__column">
+			<p class="portfolio__rating">Оценка портфеля: {{ ratingValue }}$</p>
 			<h1>Распределение валюты в портфеле</h1>
 			<ChartPiePortf :currencies-list="currenciesList"/>
 		</div>
@@ -86,9 +82,12 @@ export default {
 	props: ['currencies'],
 	mounted() {
 		if (window.globalData) {
-			console.log(window.globalData);
 			if (window.globalData.usdValue) 
-				this.currenciesList[0].value = window.globalData.usdValue;			
+				this.currenciesList[0].value = window.globalData.usdValue;
+			if (window.globalData.btcValue) 
+				this.currenciesList[1].value = window.globalData.btcValue;		
+			if (window.globalData.btcValue) 
+				this.currenciesList[2].value = window.globalData.ethValue;	
 		}
 		this.checkRatingValue();
 	},
@@ -155,9 +154,9 @@ export default {
 			this.secondValue = event.target.value;
 			this.currenciesChange();
 			if (this.transferInActive === 'USD') {
-				this.firstValue = (this.secondValue / this.exchange).toFixed(3);
+				this.firstValue = (this.secondValue / this.exchange).toFixed(2);
 			} else {
-				this.firstValue = (this.secondValue * this.exchange).toFixed(3);
+				this.firstValue = (this.secondValue * this.exchange).toFixed(2);
 			}
 		},
 		currenciesChange() {
@@ -202,10 +201,14 @@ export default {
 				}
 			}
 			this.checkRatingValue();
+			this.firstValue = '';
+			this.secondValue = '';
 		},
 		checkRatingValue() {
 			this.ratingValue = ((this.currenciesList[1].value * this.currencies.btcToUsd) + (this.currenciesList[2].value * this.currencies.ethToUsd) + this.currenciesList[0].value).toFixed(2);
 			window.globalData.usdValue = this.currenciesList[0].value;
+			window.globalData.btcValue = this.currenciesList[1].value;
+			window.globalData.ethValue = this.currenciesList[2].value;
 		},
 		rechargeBalance(event) {
 		this.rechargeValue = event.target.value;
@@ -282,42 +285,42 @@ $primary-color: #27262E;
 	}
 	h1 {    
 			font-size: 20px;
-			line-height: 2.56em; 
+			line-height: 1.5em;
 	}
 }
 
 .portfolio__content {
-	.rating__inner {
+	.balance__inner {
 		max-width: 520px;
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
+		display: flex;
 		align-items: center;
-		.portfolio__rating {
-				@extend %text;
-				margin-bottom: 15px;
+		.portfolio__balance {
+			@extend %text;
+			margin-bottom: 15px;
+			width: 300px;
 		}
 		.button--recharge {
 			width: 100px;
 			padding: 1px;
 			height: 30px;
 		}
-		.recharge-balance__inner {
-			display: flex;
-			align-items: center;
-			margin-bottom: 10px;
-			.input--recharge {
-				@extend %input;
-				width: 150px;
-				height: 30px;
-				margin-right: 10px;
-			}
-			.button--submiit {
-				display: block;
-				width: 100px;
-				height: 30px;
-				padding: 1px;
-				margin: 0;
-			}
+	}
+	.recharge-balance__inner {
+		display: flex;
+		align-items: center;
+		margin-bottom: 10px;
+		.input--recharge {
+			@extend %input;
+			width: 150px;
+			height: 30px;
+			margin-right: 10px;
+		}
+		.button--submiit {
+			display: block;
+			width: 100px;
+			height: 30px;
+			padding: 1px;
+			margin: 0;
 		}
 	}
 	.portfolio__list {
@@ -332,7 +335,7 @@ $primary-color: #27262E;
 	}
 	.button {
 			width: 220px;
-			margin-bottom: 20px;
+			margin-bottom: 10px;
 			height: 40px;
 			padding: 5px;
 	}
@@ -355,6 +358,7 @@ $primary-color: #27262E;
 		justify-content: space-between;
 		position: relative;
 		cursor: pointer;
+		user-select: none;
 	}
 	.select__arrow {
 		padding: 8px;
@@ -393,5 +397,92 @@ $primary-color: #27262E;
 h1 {
 	@extend %text;
 	text-align: center;
+}
+
+.chart__column {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-top: 2px;
+		.portfolio__rating {
+			@extend %text;
+			font-size: 20px;
+			margin-bottom: 15px;
+		}
+}
+
+@media (max-width: 800px) {
+	.portfolio__inner {
+		grid-template-columns: repeat(1, 1fr);
+	}
+	.content__column {
+		display: grid;
+		justify-content: center;
+		margin-bottom: 15px;
+	}
+}
+
+
+@media (max-width: 525px) {
+	.portfolio__header {
+		h1 {
+			font-size: 15px;
+		}
+	}
+
+	.portfolio__content {
+		.balance__inner {
+			flex-wrap: wrap;
+			.portfolio__balance {
+				margin-bottom: 5px;
+			}
+		}
+	}
+
+	.button--submiit {
+		margin-top: 0;
+	}
+
+	.chart__column {
+		max-width: 400px;
+		.portfolio__rating {
+			font-size: 15px;
+			margin-bottom: 0;
+		}
+	}
+}
+
+@media (max-width: 380px) {
+	%text {
+		font-size: 12px;
+	}
+
+	.transfer__label {
+		span {
+			font-size: 12px;
+		}
+	}
+
+	.content__column {
+		.portfolio__header {
+			.svg--avatar {
+				margin-right: 5px;
+			}
+			.h1 {
+				font-size: 12px;
+			}
+		}
+	}
+	.portfolio__content {
+		.balance__inner {
+			.portfolio__balance {
+				max-width: 250px;
+			}
+		}
+	}
+		
+  .chart__column {
+    max-width: 300px;
+	}
 }
 </style>
